@@ -1,7 +1,7 @@
 # ===============================
 # Stage 1: Build the application
 # ===============================
-FROM maven:3.9.6-amazoncorretto-17 AS build
+FROM maven:3.9.6-amazoncorretto-21 AS build
 
 # Set working directory
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN ./mvnw clean package -DskipTests
 # ===============================
 # Stage 2: Run the application
 # ===============================
-FROM amazoncorretto:17-alpine
+FROM amazoncorretto:21-alpine
 
 # Set working directory
 WORKDIR /app
