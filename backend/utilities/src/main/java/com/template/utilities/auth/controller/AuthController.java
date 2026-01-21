@@ -1,0 +1,63 @@
+package com.template.utilities.auth.controller;
+
+import com.template.utilities.auth.dto.AuthRequest;
+import com.template.utilities.auth.dto.AuthResponse;
+import com.template.utilities.auth.dto.SignupRequest;
+import com.template.utilities.auth.jwt.JwtUtil;
+import com.template.utilities.user.entity.User;
+import com.template.utilities.user.service.UserService;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/auth")
+@CrossOrigin(origins = "*")
+public class AuthController {
+
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
+
+    // 🔐 LOGIN
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody AuthRequest request) {
+
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        if (!user.isEnabled()) {
+            throw new RuntimeException("User is disabled");
+        }
+
+        // ⚠️ Plain password check for template
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        String token = JwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name()
+        );
+
+        return new AuthResponse(true, "Login successful", token);
+    }
+
+    // 📝 SIGNUP
+    @PostMapping("/signup")
+    public AuthResponse signup(@RequestBody SignupRequest request) {
+
+        User user = userService.register(
+                request.getEmail(),
+                request.getUserName(),
+                request.getPassword()
+        );
+
+        String token = JwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name()
+        );
+
+        return new AuthResponse(true, "Signup successful", token);
+    }
+}

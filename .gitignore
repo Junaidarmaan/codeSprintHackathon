@@ -1,0 +1,21 @@
+# React (CRA)
+node_modules/
+build/
+*.log
+
+# Java / Spring Boot
+target/
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# Env / Secrets
+.env
+application.properties
+*.pem
