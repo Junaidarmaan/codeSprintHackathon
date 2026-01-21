@@ -115,7 +115,9 @@ export default function Login() {
     return null;
   }
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    // return <Navigate to="/dashboard" replace />;
+    window.location.href = "https://panpsychistic-fae-irrepressibly.ngrok-free.dev/";
+
   }
 
   const onSubmit = async (e) => {
@@ -137,7 +139,9 @@ export default function Login() {
       })
       login(res.data.token)
       setTimeout(() => {
-        navigate("/dashboard")
+        // navigate("/dashboard")
+        window.location.href = "https://panpsychistic-fae-irrepressibly.ngrok-free.dev/";
+
         hideTeddy()
       }, 1500) // Give user time to see the success message
     } else {
