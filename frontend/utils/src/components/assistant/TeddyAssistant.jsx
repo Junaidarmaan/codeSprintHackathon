@@ -26,18 +26,19 @@ const TeddyAssistant = () => {
   const teddySrc = teddyMap[emotion] || idle;
 
   return (
-    <Slide direction="down" in={visible} mountOnEnter unmountOnExit>
+    <Slide direction="up" in={visible} mountOnEnter unmountOnExit>
       <Box
         sx={{
           position: "fixed",
-          top: 20,
-          left: "5%",
-          transform: "translateX(-50%)",
+          bottom: 40,
+          left: 40,
           display: "flex",
-          alignItems: "flex-start",
-          gap: 2,
+          flexDirection: "row", // Teddy on left, text on right
+          alignItems: "flex-end",
+          gap: 1,
           zIndex: 1300,
           pointerEvents: "none",
+          width: "auto",
         }}
       >
         {/* Teddy */}
@@ -46,8 +47,8 @@ const TeddyAssistant = () => {
           src={teddySrc}
           alt="Cloud Teddy Assistant"
           sx={{
-            width: 200,
-            height: 200,
+            width: { xs: 120, sm: 160, md: 180 },
+            height: "auto",
             objectFit: "contain",
             filter: `drop-shadow(0px 8px 16px ${alpha(
               theme.palette.common.black,
@@ -82,7 +83,7 @@ const TeddyAssistant = () => {
               sx={{
                 position: "absolute",
                 left: -8,
-                top: 24,
+                bottom: 24, // Tail at the bottom side to match flex-end alignment
                 width: 0,
                 height: 0,
                 borderTop: "8px solid transparent",

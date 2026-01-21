@@ -61,70 +61,56 @@ export default function Login() {
     return () => hideTeddy(); // cleanup when leaving page
   }, []);
   useEffect(() => {
-    // untouched state
-    
+    // 1. If we just started or everything is empty -> Idle
     if (!email && !password && !submitAttempted) {
+      showTeddy({
+        message: "ready to log you in ......",
+        emotion: "idle",
+      });
       return;
     }
 
-
-
-    // after clicking login, if invalid -> angry (rare & impactful)
+    // 2. Handle submissions errors (Highest priority)
     if (submitAttempted) {
       if (!email || !password) {
         showTeddy({
           message: "hmm.. you need to fill all mandatory entries",
           emotion: "angry"
-        })
+        });
         return;
       }
-
-      if (!isEmailValid) {
+      if (!isEmailValid || !isPasswordValid) {
         showTeddy({
-          message: "kindly please enter the valid email",
+          message: "kindly please correct the errors above",
           emotion: "sad"
-        })
-        return;
-      }
-
-      if (!isPasswordValid) {
-        showTeddy({
-          message: "kindly please enter the valid password",
-          emotion: "sad"
-        })
+        });
         return;
       }
     }
 
-    // invalid email while typing -> confused
+    // 3. Typing state feedback
     if (email.length > 0 && !isEmailValid) {
       showTeddy({
-        message: "is it really a valid email",
+        message: "hmmm... that doesn't look like a valid email yet",
         emotion: "confused"
-      })
-      return;
-    }
-
-    // password too short -> sad
-    if (password.length > 0 && !isPasswordValid) {
+      });
+    } else if (password.length > 0 && !isPasswordValid) {
       showTeddy({
-        message: "weak password",
+        message: "your password is a bit too short",
         emotion: "sad"
-      })
-      return;
-    }
-
-    // all good -> happy
-    if (isEmailValid && isPasswordValid) {
+      });
+    } else if (isEmailValid && isPasswordValid) {
       showTeddy({
-        message: "you are genius",
+        message: "looking good! ready to submit?",
         emotion: "happy"
-      })
-      return;
+      });
+    } else {
+      showTeddy({
+        message: "great, keep going...",
+        emotion: "idle"
+      });
     }
-
-    // typing fallback
-  }, [email, password, isEmailValid, isPasswordValid, submitAttempted]);
+  }, [email, password, isEmailValid, isPasswordValid, submitAttempted, showTeddy]);
   if (loading) {
     return null;
   }
@@ -143,19 +129,20 @@ export default function Login() {
     const res = await authApi.login({
       email, password
     })
-    console.log(JSON.stringify(res.data));
+
     if (res.data.success) {
       showTeddy({
-        message: "successfully verified your credentials",
+        message: res.data.message || "successfully verified your credentials",
         emotion: "happy"
       })
       login(res.data.token)
-      navigate("/dashboard")
-      hideTeddy()
-
+      setTimeout(() => {
+        navigate("/dashboard")
+        hideTeddy()
+      }, 1500) // Give user time to see the success message
     } else {
       showTeddy({
-        message: "failed to verify your credentials please check again",
+        message: res.data.message || "failed to verify your credentials please check again",
         emotion: "angry"
       })
     }

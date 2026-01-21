@@ -90,10 +90,10 @@ const THEMES = {
       mode: "dark",
 
       primary: {
-        main: "#0EA5E9", // clean blue actions
+        main: "#6366F1", // subtle purple accents
       },
       secondary: {
-        main: "#6366F1", // subtle purple accents
+        main: "#0EA5E9", // clean blue actions
       },
 
       background: {
@@ -119,7 +119,7 @@ const THEMES = {
  * - "roseDark"
  * - "oceanDark"
  */
-const ACTIVE_THEME = "emeraldDark";
+const ACTIVE_THEME = "oceanDark";
 
 /**
  * ===============================

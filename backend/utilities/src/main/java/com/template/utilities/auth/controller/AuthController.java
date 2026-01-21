@@ -22,42 +22,52 @@ public class AuthController {
     // 🔐 LOGIN
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
+        try {
+            User user = userService.findByEmail(request.getEmail())
+                    .orElse(null);
 
-        User user = userService.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+            if (user == null) {
+                return new AuthResponse(false, "Invalid email or password", null);
+            }
 
-        if (!user.isEnabled()) {
-            throw new RuntimeException("User is disabled");
+            if (!user.isEnabled()) {
+                return new AuthResponse(false, "User is disabled", null);
+            }
+
+            // ⚠️ Plain password check for template
+            if (!user.getPassword().equals(request.getPassword())) {
+                return new AuthResponse(false, "Invalid email or password", null);
+            }
+
+            String token = JwtUtil.generateToken(
+                    user.getEmail(),
+                    user.getRole().name()
+            );
+
+            return new AuthResponse(true, "Login successful", token);
+        } catch (Exception e) {
+            return new AuthResponse(false, "Login failed: " + e.getMessage(), null);
         }
-
-        // ⚠️ Plain password check for template
-        if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
-        }
-
-        String token = JwtUtil.generateToken(
-                user.getEmail(),
-                user.getRole().name()
-        );
-
-        return new AuthResponse(true, "Login successful", token);
     }
 
     // 📝 SIGNUP
     @PostMapping("/signup")
     public AuthResponse signup(@RequestBody SignupRequest request) {
+        try {
+            User user = userService.register(
+                    request.getEmail(),
+                    request.getUserName(),
+                    request.getPassword()
+            );
 
-        User user = userService.register(
-                request.getEmail(),
-                request.getUserName(),
-                request.getPassword()
-        );
+            String token = JwtUtil.generateToken(
+                    user.getEmail(),
+                    user.getRole().name()
+            );
 
-        String token = JwtUtil.generateToken(
-                user.getEmail(),
-                user.getRole().name()
-        );
-
-        return new AuthResponse(true, "Signup successful", token);
+            return new AuthResponse(true, "Signup successful", token);
+        } catch (Exception e) {
+            return new AuthResponse(false, e.getMessage(), null);
+        }
     }
 }
